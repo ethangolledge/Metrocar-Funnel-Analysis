@@ -1,4 +1,4 @@
-### Project Summary
+## Project Summary
 
 ### About Metrocar
 Metrocar connects riders with drivers through a mobile app, acting as an intermediary to facilitate ride-hailing.
@@ -14,10 +14,10 @@ Our analysis of Metrocar’s customer funnel identified key areas for improvemen
 * Demographic Target: The 35-44 age group is our most valuable demographic.
 * Surge Pricing: Consider implementing surge pricing from 8am-9am and 4pm-7pm.
 
-## Analytical Tools
-Data Exploration: Beekeeper
-Detailed Analysis: Python
-Visualisation: Tableau
+### Analytical Tools
+* Data Exploration: SQL in Beekeeper
+* Detailed Analysis: Python
+* Visualisation: Tableau
 
 ### Data Sources
 We used five Postgres tables, covering app_downloads, signups, ride_requests, transactions, and reviews.
