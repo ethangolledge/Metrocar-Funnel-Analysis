@@ -550,7 +550,6 @@ WITH
  CAST(NULL AS numeric) AS avg_ride_duration,
  CAST(NULL AS numeric) AS sum_purchase_amount,
  CAST(NULL AS numeric) AS avg_rating
-51
  FROM
  ride_requests r
  LEFT JOIN signups s ON r.user_id = s.user_id
