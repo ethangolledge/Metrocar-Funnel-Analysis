@@ -1,4 +1,6 @@
 [1]
+-- Examining the funnel at a user level granularity
+
 WITH
  user_funnel AS (
  SELECT
@@ -21,7 +23,6 @@ WITH
  COUNT(DISTINCT user_id)
  FROM
  ride_requests
-32
  UNION
  SELECT
  4 AS step,
@@ -49,7 +50,6 @@ WITH
  ON r.ride_id = t.ride_id
  WHERE
  charge_status = 'Approved'
-33
  UNION
  SELECT
  7 AS step,
@@ -71,12 +71,14 @@ FROM
  user_funnel
 ORDER BY
  step;
-7.2 Rides Funnel Query
+
+
+
 [2]
+-- Examining the funnel at a ride level granularity
 WITH
  ride_funnel AS (
  SELECT
-34
  1 AS step,
  'app_downloads' AS funnel_name,
  CAST(NULL AS BIGINT) AS count
@@ -104,7 +106,6 @@ WITH
  FROM
  ride_requests
  WHERE
-35
  accept_ts IS NOT NULL
  UNION
  SELECT
@@ -132,7 +133,6 @@ WITH
 
  )
 SELECT
-36
  funnel_name,
  COUNT AS ride_count,
  COUNT::FLOAT / LAG(COUNT) OVER (
@@ -145,8 +145,11 @@ FROM
  ride_funnel
 ORDER BY
  step;
-7.3 User Query for Tableau
+
+
+
 [3]
+--User level granularity query data for Tableau
 WITH
  user_downloads AS (
  SELECT
@@ -159,7 +162,6 @@ WITH
  FROM
  download_ts
  ) AS year,
-37
  EXTRACT(
  MONTH
  FROM
@@ -187,7 +189,6 @@ WITH
  2 AS funnel_step,
  'signups' AS funnel_name,
  platform,
-38
  s.age_range,
  EXTRACT(
  YEAR
@@ -215,7 +216,6 @@ WITH
  year,
  month,
  hour
-39
  ),
  user_ride_requests AS (
  SELECT
@@ -243,7 +243,6 @@ WITH
  FROM
  ride_requests r
  LEFT JOIN signups s ON r.user_id = s.user_id
-40
  LEFT JOIN app_downloads a ON s.session_id = a.app_download_key
  GROUP BY
  a.platform,
@@ -271,7 +270,6 @@ WITH
  EXTRACT(
  HOUR
  FROM
-41
  download_ts
  ) AS hour,
  COUNT(DISTINCT r.user_id) AS user_count,
@@ -299,7 +297,6 @@ WITH
  YEAR
  FROM
  download_ts
-42
  ) AS year,
  EXTRACT(
  MONTH
@@ -327,7 +324,6 @@ WITH
  month,
  hour
  ),
-43
  user_payment AS (
  SELECT
  6 AS funnel_step,
@@ -355,7 +351,6 @@ WITH
  transactions t
  LEFT JOIN ride_requests r ON t.ride_id = r.ride_id
  LEFT JOIN signups s ON r.user_id = s.user_id
-44
  LEFT JOIN app_downloads a ON s.session_id = a.app_download_key
  WHERE
  t.charge_status = 'Approved'
@@ -383,7 +378,6 @@ WITH
  download_ts
  ) AS month,
  EXTRACT(
-45
  HOUR
  FROM
  download_ts
@@ -411,7 +405,6 @@ SELECT
  *
 FROM
  user_signups
-46
 UNION
 SELECT
 
@@ -444,9 +437,13 @@ FROM
  user_review
 ORDER BY
  funnel_step;
-47
-7.4 Rides Query for Tableau
+
+
+
+
+-- Ride level granularity querying data for Tableau
 [4]
+
 WITH
  rides_requested AS (
  SELECT
@@ -472,7 +469,6 @@ WITH
  ) AS hour,
  CAST(NULL AS numeric) AS avg_time_requested_pickup,
  CAST(NULL AS numeric) AS avg_time_requested_accepted,
-48
  CAST(NULL AS numeric) AS avg_time_accepted_pickup,
  ROUND(
  AVG(
@@ -500,7 +496,6 @@ WITH
  LEFT JOIN app_downloads a ON s.session_id = a.app_download_key
  GROUP BY
  a.platform,
-49
  s.age_range,
  year,
  month,
@@ -528,7 +523,6 @@ WITH
  FROM
  r.request_ts
  ) AS hour,
-50
  CAST(NULL AS numeric) AS avg_time_requested_pickup,
  AVG(
  EXTRACT(
@@ -584,7 +578,6 @@ WITH
  ) AS year,
  EXTRACT(
  MONTH
-52
  FROM
  r.request_ts
  ) AS month,
@@ -612,7 +605,6 @@ WITH
  (r.dropoff_ts - r.pickup_ts)
  )
  ) AS avg_ride_duration,
-53
  CAST(NULL AS numeric) AS sum_purchase_amount,
  CAST(NULL AS numeric) AS avg_rating
  FROM
@@ -640,7 +632,6 @@ WITH
  YEAR
  FROM
  r.request_ts
-54
  ) AS year,
  EXTRACT(
  MONTH
@@ -668,7 +659,6 @@ WITH
  LEFT JOIN transactions t ON r.ride_id = t.ride_id
  WHERE
  r.accept_ts IS NOT NULL
-55
  AND r.dropoff_ts IS NOT NULL
  AND t.charge_status = 'Approved'
  GROUP BY
@@ -696,7 +686,6 @@ WITH
  r.request_ts
  ) AS month,
  EXTRACT(
-56
  HOUR
  FROM
  r.request_ts
@@ -724,7 +713,6 @@ WITH
  a.platform,
  s.age_range,
  year,
-57
  month,
  hour
 
@@ -758,8 +746,10 @@ SELECT
 *
 FROM
  rides_reviewed
-58
-7.5 Reviews Query
+
+
+
+-- Reviews querying data for manipulation in python
 WITH user_reviews AS (
  SELECT
  re.user_id,
